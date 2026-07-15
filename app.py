@@ -1,6 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from scrapers.rentfaster import get_page
 from scrapers.rentalsca import test as rentals_test
+from agents.apartment_agent import ApartmentAgent
+
 
 app = FastAPI(title="Apartment Hunter")
 
@@ -18,3 +20,11 @@ def search(city: str = "ab/edmonton"):
 @app.get("/rentalsca")
 def rentalsca():
     return rentals_test()
+
+
+@app.get("/agent")
+def agent(url: str = Query(...)):
+
+    a = ApartmentAgent()
+
+    return a.search(url)
