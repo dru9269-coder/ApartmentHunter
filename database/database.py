@@ -2,21 +2,29 @@ import sqlite3
 
 DB_NAME = "apartments.db"
 
+
+def connect():
+    return sqlite3.connect(DB_NAME)
+
+
 def init_db():
-    conn = sqlite3.connect(DB_NAME)
+    conn = connect()
     cur = conn.cursor()
 
     cur.execute("""
-    CREATE TABLE IF NOT EXISTS listings (
+    CREATE TABLE IF NOT EXISTS listings(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         source TEXT,
         title TEXT,
         price INTEGER,
-        bedrooms TEXT,
-        bathrooms TEXT,
         address TEXT,
+        bedrooms REAL,
+        bathrooms REAL,
+        pets INTEGER,
         url TEXT UNIQUE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        hash TEXT,
+        first_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """)
 
@@ -43,15 +51,15 @@ def save_listing(listing):
     )
     VALUES(?,?,?,?,?,?,?,?,?)
     """, (
-        listing.get("source"),
-        listing.get("title"),
-        listing.get("price"),
-        listing.get("address"),
-        listing.get("bedrooms"),
-        listing.get("bathrooms"),
-        int(bool(listing.get("pets", False))),
-        listing.get("url"),
-        listing.get("hash"),
+        listing["source"],
+        listing["title"],
+        listing["price"],
+        listing["address"],
+        listing["bedrooms"],
+        listing["bathrooms"],
+        int(listing["pets"]),
+        listing["url"],
+        listing["hash"]
     ))
 
     conn.commit()

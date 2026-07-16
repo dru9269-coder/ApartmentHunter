@@ -1,6 +1,7 @@
 from browser.browser import Browser
 from browser.listings import find_listing_candidates
 from browser.parser import extract_price
+from database.database import save_listing
 
 
 class ApartmentAgent:
@@ -23,10 +24,21 @@ class ApartmentAgent:
 
                 price = extract_price(card["text"])
 
-                results.append({
+                listing = {
+                    "source": url,
+                    "title": card["text"][:60],
                     "price": price,
-                    "preview": card["text"][:150]
-                })
+                    "address": "",
+                    "bedrooms": None,
+                    "bathrooms": None,
+                    "pets": False,
+                    "url": url,
+                    "hash": str(hash(card["text"]))
+                }
+
+                save_listing(listing)
+
+                results.append(listing)
 
             return results
 
